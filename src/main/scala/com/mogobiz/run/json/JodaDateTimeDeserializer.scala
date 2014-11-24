@@ -28,4 +28,7 @@ class JodaDateTimeOptionDeserializer extends JsonDeserializer[Option[DateTime]] 
     if (v != null) Some(fmt.parseDateTime(v))
     else None;
   }
+
+  override def getNullValue: Option[DateTime] = None
+
 }
