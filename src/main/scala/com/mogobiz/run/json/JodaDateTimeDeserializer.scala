@@ -17,22 +17,30 @@ class JodaDateTimeDeserializer extends JsonDeserializer[DateTime] {
   val fmt : DateTimeFormatter = ISODateTimeFormat.dateTimeParser()
 
   override def deserialize(p1: JsonParser, p2: DeserializationContext): DateTime = {
-    val v = p1.getValueAsString()
-    if (v != null) fmt.parseDateTime(v)
-    else null;
+    JodaDateTimeOptionDeserializer.deserialize(p1.getValueAsString())
   }
 }
 
 class JodaDateTimeOptionDeserializer extends JsonDeserializer[Option[DateTime]] {
 
-  val fmt : DateTimeFormatter = ISODateTimeFormat.dateTimeParser()
-
   override def deserialize(p1: JsonParser, p2: DeserializationContext): Option[DateTime] = {
-    val v = p1.getValueAsString()
-    if (v != null) Some(fmt.parseDateTime(v))
-    else None;
+    JodaDateTimeOptionDeserializer.deserializeAsOption(p1.getValueAsString())
   }
 
   override def getNullValue: Option[DateTime] = None
 
+}
+
+object JodaDateTimeOptionDeserializer {
+
+  val fmt : DateTimeFormatter = ISODateTimeFormat.dateTimeParser()
+
+  def deserializeAsOption(v: String): Option[DateTime] = {
+    if (v != null) Some(fmt.parseDateTime(v))
+    else None;
+  }
+
+  def deserialize(v: String): DateTime = {
+    deserializeAsOption(v).getOrElse(null)
+  }
 }
