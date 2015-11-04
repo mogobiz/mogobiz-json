@@ -18,7 +18,7 @@ class JodaDateTimeSerializer extends JsonSerializer[DateTime] {
 
   override def serialize(p1: DateTime, p2: JsonGenerator, p3: SerializerProvider): Unit = {
     if (p1 != null) {
-      p2.writeString(fmt.print(p1))
+      p2.writeString(fmt.print(p1.toDateTime(DateTimeZone.UTC)))
     }
     else p2.writeNull()
   }
@@ -30,7 +30,7 @@ class JodaDateTimeOptionSerializer extends JsonSerializer[Option[DateTime]] {
 
   override def serialize(p1: Option[DateTime], p2: JsonGenerator, p3: SerializerProvider): Unit = {
     if (p1.isDefined) {
-      p2.writeString(fmt.print(p1.get))
+      p2.writeString(fmt.print(p1.get.toDateTime(DateTimeZone.UTC)))
     }
     else p2.writeNull()
   }
