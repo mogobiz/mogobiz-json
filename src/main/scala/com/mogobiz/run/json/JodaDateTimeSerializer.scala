@@ -10,7 +10,6 @@ import org.joda.time.{DateTimeZone, DateTime}
 import org.joda.time.format.{DateTimeFormatter, ISODateTimeFormat}
 
 /**
- * Created by yoannbaudy on 13/11/2014.
  */
 class JodaDateTimeSerializer extends JsonSerializer[DateTime] {
 

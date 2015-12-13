@@ -9,7 +9,6 @@ import org.json4s._
 
 /**
  *
- * Created by yoannbaudy on 10/09/14.
  */
 trait JsonUtil {
 

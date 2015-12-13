@@ -5,7 +5,6 @@
 package com.mogobiz.json
 
 /**
- * Created by hayssams on 04/03/14.
  */
 
 import java.io.{InputStream, ObjectInputStream, ObjectStreamClass}
