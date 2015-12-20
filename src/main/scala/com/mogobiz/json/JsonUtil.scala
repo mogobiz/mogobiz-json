@@ -4,7 +4,7 @@
 
 package com.mogobiz.json
 
-import org.json4s.JsonAST.{JArray, JDecimal, JDouble, JField, JInt, JNothing, JObject, JString, JValue}
+import org.json4s.JsonAST.{ JArray, JDecimal, JDouble, JField, JInt, JNothing, JObject, JString, JValue }
 import org.json4s._
 
 /**
@@ -76,7 +76,7 @@ trait JsonUtil {
   def extractJSonProperty(source: JValue, property: String, defaultValue: JValue): JValue = {
     source match {
       case o: JObject =>
-        o.obj.find {p: JField => p._1 == property}.getOrElse(JField(property, defaultValue))._2
+        o.obj.find { p: JField => p._1 == property }.getOrElse(JField(property, defaultValue))._2
       case _ => defaultValue
     }
   }
