@@ -39,7 +39,5 @@ object JodaDateTimeOptionDeserializer {
     else None;
   }
 
-  def deserialize(v: String): DateTime = {
-    deserializeAsOption(v).getOrElse(null)
-  }
+  def deserialize(v: String): DateTime = deserializeAsOption(v).orNull
 }

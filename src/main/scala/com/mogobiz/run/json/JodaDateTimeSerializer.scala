@@ -24,7 +24,7 @@ class JodaDateTimeSerializer extends JsonSerializer[DateTime] {
 
 class JodaDateTimeOptionSerializer extends JsonSerializer[Option[DateTime]] {
 
-  val fmt: DateTimeFormatter = ISODateTimeFormat.dateTime();
+  val fmt: DateTimeFormatter = ISODateTimeFormat.dateTime()
 
   override def serialize(p1: Option[DateTime], p2: JsonGenerator, p3: SerializerProvider): Unit = {
     if (p1.isDefined) {
