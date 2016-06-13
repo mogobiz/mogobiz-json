@@ -4,13 +4,7 @@
 
 package com.mogobiz.json
 
-import java.io.{ BufferedOutputStream, ByteArrayInputStream, ByteArrayOutputStream, ObjectInputStream, ObjectOutputStream }
-
-import com.fasterxml.jackson.core.`type`.TypeReference
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
-
-import scala.Array.canBuildFrom
+import java.io._
 
 /**
  * Generic Object Converter
@@ -50,42 +44,3 @@ trait BinaryConverter[T] extends Converter[T] {
   }
 }
 
-trait JSONConverter[T] extends Converter[T] {
-  def toDomain[T: Manifest](bytes: Array[Byte]): T = {
-    val x: Option[T] = None
-    JacksonConverter.deserialize[T](new String(bytes))
-  }
-
-  def fromDomain[T: Manifest](value: T): Array[Byte] = {
-    JacksonConverter.serialize(value) map (_.toChar) toCharArray () map (_.toByte)
-  }
-}
-
-object JacksonConverter {
-
-  import java.lang.reflect._
-
-  lazy val mapper = new ObjectMapper().registerModule(DefaultScalaModule)
-
-  def serialize(value: Any): String = {
-    mapper.writeValueAsString(value)
-  }
-
-  def deserialize[T: Manifest](json: String): T = mapper.readValue(json, typeReference[T])
-
-  private[this] def typeReference[T: Manifest] = new TypeReference[T] {
-    override def getType: Type = typeFromManifest(manifest[T])
-  }
-
-  private[this] def typeFromManifest(m: Manifest[_]): Type = {
-    if (m.typeArguments.isEmpty) {
-      m.runtimeClass
-    } else new ParameterizedType {
-      def getRawType = m.runtimeClass
-
-      def getActualTypeArguments = m.typeArguments.map(typeFromManifest).toArray
-
-      def getOwnerType = null
-    }
-  }
-}
