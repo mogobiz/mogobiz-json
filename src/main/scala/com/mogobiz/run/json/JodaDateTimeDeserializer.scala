@@ -5,12 +5,12 @@
 package com.mogobiz.run.json
 
 import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.{ DeserializationContext, JsonDeserializer }
-import org.joda.time.{ DateTimeZone, DateTime }
-import org.joda.time.format.{ DateTimeFormatter, ISODateTimeFormat }
+import com.fasterxml.jackson.databind.{DeserializationContext, JsonDeserializer}
+import org.joda.time.{DateTimeZone, DateTime}
+import org.joda.time.format.{DateTimeFormatter, ISODateTimeFormat}
 
 /**
- */
+  */
 class JodaDateTimeDeserializer extends JsonDeserializer[DateTime] {
 
   val fmt: DateTimeFormatter = ISODateTimeFormat.dateTimeParser()
