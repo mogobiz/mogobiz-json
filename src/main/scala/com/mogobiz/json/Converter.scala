@@ -4,7 +4,7 @@
 
 package com.mogobiz.json
 
-import java.io.{ BufferedOutputStream, ByteArrayInputStream, ByteArrayOutputStream, ObjectInputStream, ObjectOutputStream }
+import java.io.{BufferedOutputStream, ByteArrayInputStream, ByteArrayOutputStream, ObjectInputStream, ObjectOutputStream}
 
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -13,12 +13,12 @@ import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import scala.Array.canBuildFrom
 
 /**
- * Generic Object Converter
- * Binary converter based on Java standard serializer
- * A performance improvement would be to rely on https://code.google.com/p/kryo/
- *
- * JSON converter based on jackson scala module
- */
+  * Generic Object Converter
+  * Binary converter based on Java standard serializer
+  * A performance improvement would be to rely on https://code.google.com/p/kryo/
+  *
+  * JSON converter based on jackson scala module
+  */
 trait Converter[T] {
   def toDomain[T: Manifest](obj: Array[Byte]): T
 
@@ -80,12 +80,13 @@ object JacksonConverter {
   private[this] def typeFromManifest(m: Manifest[_]): Type = {
     if (m.typeArguments.isEmpty) {
       m.runtimeClass
-    } else new ParameterizedType {
-      def getRawType = m.runtimeClass
+    } else
+      new ParameterizedType {
+        def getRawType = m.runtimeClass
 
-      def getActualTypeArguments = m.typeArguments.map(typeFromManifest).toArray
+        def getActualTypeArguments = m.typeArguments.map(typeFromManifest).toArray
 
-      def getOwnerType = null
-    }
+        def getOwnerType = null
+      }
   }
 }
