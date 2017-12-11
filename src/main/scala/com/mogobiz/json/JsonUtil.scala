@@ -4,7 +4,6 @@
 
 package com.mogobiz.json
 
-import org.json4s.JsonAST.{JArray, JDecimal, JDouble, JField, JInt, JNothing, JObject, JString, JValue}
 import org.json4s._
 
 /**

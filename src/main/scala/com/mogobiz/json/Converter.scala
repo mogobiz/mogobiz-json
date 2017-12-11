@@ -4,31 +4,29 @@
 
 package com.mogobiz.json
 
-import java.io.{BufferedOutputStream, ByteArrayInputStream, ByteArrayOutputStream, ObjectInputStream, ObjectOutputStream}
+import java.io._
 
-import com.fasterxml.jackson.core.`type`.TypeReference
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.databind.{
+  DeserializationFeature,
+  SerializationFeature
+}
+import com.fasterxml.jackson.datatype.joda.JodaModule
+import org.json4s.ext.JodaTimeSerializers
+import org.json4s.jackson.JsonMethods
+import org.json4s.jackson.JsonMethods._
+import org.json4s.jackson.Serialization.{read, write, writePretty}
+import org.json4s.{DefaultFormats, Formats, JValue}
 
-import scala.Array.canBuildFrom
-
-/**
-  * Generic Object Converter
-  * Binary converter based on Java standard serializer
-  * A performance improvement would be to rely on https://code.google.com/p/kryo/
-  *
-  * JSON converter based on jackson scala module
-  */
 trait Converter[T] {
   def toDomain[T: Manifest](obj: Array[Byte]): T
 
-  def fromDomain[T: Manifest](value: T): Array[Byte]
+  def fromDomain[T <: AnyRef: Manifest](value: T): Array[Byte]
 }
 
 trait BinaryConverter[T] extends Converter[T] {
   def toDomain[T: Manifest](obj: Array[Byte]): T = safeDecode(obj)
 
-  def fromDomain[T: Manifest](value: T): Array[Byte] = {
+  def fromDomain[T <: AnyRef: Manifest](value: T): Array[Byte] = {
     val bos = new ByteArrayOutputStream()
     val out = new ObjectOutputStream(new BufferedOutputStream(bos))
     out writeObject (value)
@@ -56,37 +54,28 @@ trait JSONConverter[T] extends Converter[T] {
     JacksonConverter.deserialize[T](new String(bytes))
   }
 
-  def fromDomain[T: Manifest](value: T): Array[Byte] = {
-    JacksonConverter.serialize(value) map (_.toChar) toCharArray () map (_.toByte)
+  def fromDomain[T <: AnyRef: Manifest](value: T): Array[Byte] = {
+    JacksonConverter.serialize(value) toCharArray () map (_.toByte)
   }
 }
 
+// http://www.baeldung.com/jackson-serialize-dates
 object JacksonConverter {
+  JsonMethods.mapper
+    .registerModule(new JodaModule())
+    .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+  //.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
 
-  import java.lang.reflect._
+  implicit def json4sFormats: Formats =
+    DefaultFormats ++ JodaTimeSerializers.all
 
-  lazy val mapper = new ObjectMapper().registerModule(DefaultScalaModule)
+  def serializePretty(value: AnyRef): String = writePretty(value)
 
-  def serialize(value: Any): String = {
-    mapper.writeValueAsString(value)
-  }
+  def serialize(value: AnyRef): String = write(value)
 
-  def deserialize[T: Manifest](json: String): T = mapper.readValue(json, typeReference[T])
+  def deserialize[T: Manifest](json: String): T = read[T](json)
 
-  private[this] def typeReference[T: Manifest] = new TypeReference[T] {
-    override def getType: Type = typeFromManifest(manifest[T])
-  }
+  def asString(value: JValue): String = compact(render(value))
 
-  private[this] def typeFromManifest(m: Manifest[_]): Type = {
-    if (m.typeArguments.isEmpty) {
-      m.runtimeClass
-    } else
-      new ParameterizedType {
-        def getRawType = m.runtimeClass
-
-        def getActualTypeArguments = m.typeArguments.map(typeFromManifest).toArray
-
-        def getOwnerType = null
-      }
-  }
+  def parse(json: String): JValue = JsonMethods.parse(json)
 }
