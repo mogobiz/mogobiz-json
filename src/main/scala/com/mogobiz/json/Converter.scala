@@ -15,7 +15,7 @@ import org.json4s.ext.JodaTimeSerializers
 import org.json4s.jackson.JsonMethods
 import org.json4s.jackson.JsonMethods._
 import org.json4s.jackson.Serialization.{read, write, writePretty}
-import org.json4s.{DefaultFormats, Formats, JValue}
+import org.json4s.{DefaultFormats, Formats, JValue, jackson}
 
 trait Converter[T] {
   def toDomain[T: Manifest](obj: Array[Byte]): T
@@ -68,7 +68,7 @@ object JacksonConverter {
 
   implicit def json4sFormats: Formats =
     DefaultFormats ++ JodaTimeSerializers.all
-
+  implicit val serialization = jackson.Serialization
   def serializePretty(value: AnyRef): String = writePretty(value)
 
   def serialize(value: AnyRef): String = write(value)
