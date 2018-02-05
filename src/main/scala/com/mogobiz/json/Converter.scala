@@ -6,15 +6,10 @@ package com.mogobiz.json
 
 import java.io._
 
-import com.fasterxml.jackson.databind.{
-  DeserializationFeature,
-  SerializationFeature
-}
+import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.joda.JodaModule
 import org.json4s.ext.JodaTimeSerializers
 import org.json4s.jackson.JsonMethods
-import org.json4s.jackson.JsonMethods._
-import org.json4s.jackson.Serialization.{read, write, writePretty}
 import org.json4s.{DefaultFormats, Formats, JValue, jackson}
 
 trait Converter[T] {
@@ -68,14 +63,17 @@ object JacksonConverter {
 
   implicit def json4sFormats: Formats =
     DefaultFormats ++ JodaTimeSerializers.all
-  implicit val serialization = jackson.Serialization
-  def serializePretty(value: AnyRef): String = writePretty(value)
 
-  def serialize(value: AnyRef): String = write(value)
+  def serializePretty(value: AnyRef): String =
+    jackson.Serialization.writePretty(value)
 
-  def deserialize[T: Manifest](json: String): T = read[T](json)
+  def serialize(value: AnyRef): String = jackson.Serialization.write(value)
 
-  def asString(value: JValue): String = compact(render(value))
+  def deserialize[T: Manifest](json: String): T =
+    jackson.Serialization.read[T](json)
+
+  def asString(value: JValue): String =
+    JsonMethods.compact(JsonMethods.render(value))
 
   def parse(json: String): JValue = JsonMethods.parse(json)
 }
